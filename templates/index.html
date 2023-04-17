@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Draw with Cursor</title>
+  <style>
+    canvas {
+      border: 1px solid black;
+    }
+  </style>
+  <script>
+    window.addEventListener('load', () => {
+      const canvas = document.querySelector('#canvas');
+      const ctx = canvas.getContext('2d');
+
+      // Set up canvas size and style
+      canvas.width = window.innerWidth - 25;
+      canvas.height = window.innerHeight - 25;
+      ctx.font = "24px Arial";
+
+      // Set up variables for drawing
+      let isDrawing = false;
+      let lastX = 0;
+      let lastY = 0;
+
+      // Set up image preview and score
+      const img = new Image();
+      img.src = "https://via.placeholder.com/150";
+      var score = 0;
+
+      // Draw the title, image, and score
+      function drawTitle() {
+        ctx.fillStyle = 'black';
+        ctx.fillText('Draw with Cursor "A"', canvas.width / 2 - 120, 40);
+      }
+
+      function drawImage() {
+        ctx.drawImage(img, 10, 10, 100, 100);
+      }
+
+      function drawScore(score) {
+        ctx.fillStyle = 'black';
+        ctx.fillText('Score: ' + score, canvas.width - 150, 40);
+      }
+
+      function draw(e) {
+        if (!isDrawing) return;
+        ctx.strokeStyle = 'black';
+        ctx.lineWidth = 10;
+        ctx.lineCap = 'round';
+
+        ctx.beginPath();
+        ctx.moveTo(lastX, lastY);
+        ctx.lineTo(e.clientX, e.clientY);
+        ctx.stroke();
+
+        lastX = e.clientX;
+        lastY = e.clientY;
+      }
+
+      // Add event listeners for canvas
+      canvas.addEventListener('mousedown', (e) => {
+        isDrawing = true;
+        lastX = e.clientX;
+        lastY = e.clientY;
+      });
+
+      canvas.addEventListener('mousemove', draw);
+
+      canvas.addEventListener('mouseup', () => {
+        isDrawing = false;
+        // Get the canvas image data and send it to Flask server
+        const imageData = canvas.toDataURL();
+        fetch('/get_image', {
+          method: 'POST',
+          body: JSON.stringify({ imageData, score }),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }).then(response => response.json())
+                .then(data => {
+                  // Update the image and score in HTML canvas
+                  img.src = data.imageSrc;
+                  console.log(data.score);
+                  const context = canvas.getContext('2d');
+                  context.clearRect(canvas.width / 2 + 120, 0, canvas.width / 2 + 80, 60);
+                  drawImage();
+                  drawScore(data.score);
+                });
+      });
+
+      canvas.addEventListener('mouseout', () => isDrawing = false);
+
+      // Draw initial canvas content
+      drawTitle();
+      drawImage();
+      drawScore(0);
+    });
+  </script>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+</body>
+</html>
