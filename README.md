@@ -1,4 +1,7 @@
 # DrawApp
+
+![image](https://user-images.githubusercontent.com/34581618/232579861-df8fc733-07fa-4f8d-822d-5cac7f134c08.png)
+
 A game where children can practice their writing skills by drawing letters and numbers using their cursor.
 
 ### Objective
