@@ -1,5 +1,5 @@
 # DrawApp
-A game where children can practice their writing skills by drawing letters and numbers using their cursor
+A game where children can practice their writing skills by drawing letters and numbers using their cursor.
 
 ### Objective
 Draw App is an educational game for children where they can practice their writing skills by drawing letters and numbers using their cursor. The app uses a deep learning model to recognize the child's drawing and determine if it matches the letter/number that was asked to draw. If the drawing is accurate, the app provides a fixed score.
